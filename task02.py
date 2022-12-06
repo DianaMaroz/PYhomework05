@@ -25,10 +25,11 @@ def user_step(total_candy: int, max_step:int)-> int:
     total_candy -= step
     return total_candy
 
-def take_candy(total_candy: int, max_step: int, user: str) -> str:
+def take_candy(total_candy: int, max_step: int, user: str, first: bool) -> str:
+    print('Ты выбрал вариант попроще')
     flag_player = user
     while total_candy > 0:
-        if first_player == 'bot':
+        if not first:
             print(f'В игре {total_candy} конфет')
             total_candy = bot_step(total_candy, max_step)
             if total_candy == 0:
@@ -50,8 +51,42 @@ def take_candy(total_candy: int, max_step: int, user: str) -> str:
                     print('Очень жаль, но ты проиграл, все конфеты достанутся боту (((')
     return flag_player
 
+def take_candy_clever_bot(total_candy: int, max_step: int, user:str, first: bool) -> str:
+    print('Помни, против тебя играет очень умный бот')
+    flag_player = 'bot'
+    print(f'В игре {total_candy} конфет')
+    if not first:
+        print(f'Первый ходит бот')
+        if total_candy % (max_step + 1) == 0:
+            bot_step = random.randint(1, max_step)
+        else:
+            bot_step = total_candy % (max_step + 1)
+        print(f'Бот взял {bot_step} конфет')
+        total_candy -= bot_step
+    while total_candy > 0:
+        print(f'В игре {total_candy} конфет')
+        if total_candy < max_step:
+            max_step = total_candy
+        user_step = 0
+        while user_step < 1 or user_step > max_step:
+            user_step = int(input(f"Сколько конфет ты возьмешь? Помни, взять можно от 1 до {max_step}!   "))
+        total_candy -= user_step
+        if total_candy == 0:
+            flag_player = user
+            print(' Ура! Ты сделал этого умника! Все конфеты твои!')
+        else:
+            if total_candy < max_step:
+                bot_step = total_candy
+            else:
+                bot_step = max_step + 1 - user_step
+            print(f'Бот взял {bot_step} конфет')
+            total_candy -= bot_step
+            if total_candy == 0:
+                print('Очень жаль, но ты проиграл: все конфеты достанутся боту. Он слишком умен! (((')
+    return flag_player
+
 def candy_game(user_name):
-    first_player = user_name
+    first_player = True
     candy = input('На какое количество конфет играем? ')
     while not candy.isdigit():
         candy = input('Ой, кажется это не число... Попробуй еще раз:  ')
@@ -66,13 +101,18 @@ def candy_game(user_name):
     if user_choiсe == coin_random:
         print('Поздравляю, твой ход первый.')
     else:
-        first_player = 'bot'
+        first_player = False
         print('В этот раз не повезло, первым ходит бот')
-    winner = take_candy(candy, take_step, user_name)
+    level = input('Хочешь сразиться с по настоящему умным противником?')
+    if level == 'нет':
+        winner = take_candy(candy, take_step, user_name, first_player)
+    else:
+        winner = take_candy_clever_bot(candy, take_step, user_name, first_player)
+
     print(f'Победитель -  {winner.upper()}!')
 
 your_name = input("Привет! Как тебя зовут? ")
-first_player = your_name
+
 print(f'{your_name},  давай я расскажу тебе правила игры.')
 print('Условие задачи: На столе лежит определенное количество конфет. Играют два игрока делая ход друг после друга.')
 print('Первый ход определяется жеребьёвкой. За один ход можно забрать не более чем N конфет.')
@@ -82,7 +122,7 @@ while again == 'да':
     candy_game(your_name)
     again = input('Напиши да, если хочешь сыграть еще:  ')
     if not again.lower() == 'да':
-        print('Возвращайся, если захочешь сыграть еще!')
+        print('Возвращайся, если захочешь повторить!')
 
 
 
