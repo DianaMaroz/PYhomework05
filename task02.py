@@ -7,6 +7,23 @@
 # a) Добавьте игру против бота
 # b) Подумайте как наделить бота ""интеллектом""
 import random
+def is_integer(sm_input: str) -> int:
+    while not sm_input.isdigit():
+        sm_input = input('Давай на этот раз ты введешь целое число:  ')
+    return int(sm_input)
+
+def is_yes_no(sm_str:str) -> str:
+    answer_list = ['да', 'нет' ]
+    while sm_str.lower() not in answer_list:
+        sm_str = input('Прости, я не понял, что ты имеешь в виду. Напиши да или нет:  ')
+    return sm_str
+
+def is_orel_reshka(sm_str: str) -> int:
+    answer_list = ['орел', 'решка']
+    while sm_str.lower() not in answer_list:
+        sm_str = input('Прости, я не понял, что ты имеешь в виду. Напиши орел или решка:  ')
+    return sm_str
+
 
 def bot_step(total_candy: int, max_step:int) -> int:
     if total_candy < max_step:
@@ -21,7 +38,7 @@ def user_step(total_candy: int, max_step:int)-> int:
         max_step = total_candy
     step = 0
     while step < 1 or step > max_step:
-        step = int(input(f"Сколько конфет ты возьмешь? Помни, взять можно от 1 до {max_step}!   "))
+        step = is_integer(input(f"Сколько конфет ты возьмешь? Помни, взять можно от 1 до {max_step}!   "))
     total_candy -= step
     return total_candy
 
@@ -54,8 +71,8 @@ def take_candy(total_candy: int, max_step: int, user: str, first: bool) -> str:
 def take_candy_clever_bot(total_candy: int, max_step: int, user:str, first: bool) -> str:
     print('Помни, против тебя играет очень умный бот')
     flag_player = 'bot'
-    print(f'В игре {total_candy} конфет')
     if not first:
+        print(f'В игре {total_candy} конфет')
         print(f'Первый ходит бот')
         if total_candy % (max_step + 1) == 0:
             bot_step = random.randint(1, max_step)
@@ -69,7 +86,7 @@ def take_candy_clever_bot(total_candy: int, max_step: int, user:str, first: bool
             max_step = total_candy
         user_step = 0
         while user_step < 1 or user_step > max_step:
-            user_step = int(input(f"Сколько конфет ты возьмешь? Помни, взять можно от 1 до {max_step}!   "))
+            user_step = is_integer(input(f"Сколько конфет ты возьмешь? Помни, взять можно от 1 до {max_step}!   "))
         total_candy -= user_step
         if total_candy == 0:
             flag_player = user
@@ -87,15 +104,10 @@ def take_candy_clever_bot(total_candy: int, max_step: int, user:str, first: bool
 
 def candy_game(user_name):
     first_player = True
-    candy = input('На какое количество конфет играем? ')
-    while not candy.isdigit():
-        candy = input('Ой, кажется это не число... Попробуй еще раз:  ')
-    candy = int(candy)
-    take_step = input('А какое максимальное количество можно взять за ход? ')
-    while not take_step.isdigit():
-        take_step = input('Давай на этот раз ты введешь целое число:  ')
-    take_step = int(take_step)
-    user_choiсe = input(f"{user_name}, выбери: орел или решка? ").lower()
+    candy = is_integer(input('На какое количество конфет играем?  '))
+    take_step = is_integer(input('А какое максимальное количество можно взять за ход? '))
+    print('Давай проведем жеребьевку')
+    user_choiсe = is_orel_reshka(input(f"{user_name}, выбери: орел или решка? "))
     coin_random = random.choice(['орел', 'решка'])
     print(f'Сейчас подброшу монетку! {coin_random.capitalize()}!')
     if user_choiсe == coin_random:
@@ -103,7 +115,7 @@ def candy_game(user_name):
     else:
         first_player = False
         print('В этот раз не повезло, первым ходит бот')
-    level = input('Хочешь сразиться с по настоящему умным противником?')
+    level = is_yes_no(input('Хочешь сразиться с по настоящему умным противником? '))
     if level == 'нет':
         winner = take_candy(candy, take_step, user_name, first_player)
     else:
@@ -120,7 +132,7 @@ print('Все конфеты оппонента достаются сделав�
 again = 'да'
 while again == 'да':
     candy_game(your_name)
-    again = input('Напиши да, если хочешь сыграть еще:  ')
+    again = is_yes_no(input('Напиши да, если хочешь сыграть еще:  '))
     if not again.lower() == 'да':
         print('Возвращайся, если захочешь повторить!')
 
